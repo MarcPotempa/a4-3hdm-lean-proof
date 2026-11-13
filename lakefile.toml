@@ -1,0 +1,29 @@
+name = "a4_3hdm"
+defaultTargets = ["Solution", "Axioms"]
+
+[leanOptions]
+pp.unicode.fun = true
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.27.0"
+
+# The proof.
+[[lean_lib]]
+name = "BFB"
+globs = ["BFB.+"]
+
+# The definitions and the statements alone (with `sorry`), for Comparator.
+[[lean_lib]]
+name = "Challenge"
+
+# Entry point for Comparator: imports the proof.
+[[lean_lib]]
+name = "Solution"
+
+# Prints the axioms the main theorems depend on.
+[[lean_lib]]
+name = "Axioms"

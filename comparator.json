@@ -1,0 +1,15 @@
+{
+    "challenge_module": "Challenge",
+    "solution_module": "Solution",
+    "theorem_names": [
+        "BFB.A4.lm_conjecture_S4",
+        "BFB.A4.boundedBelow_iff_iv",
+        "BFB.S4.lmS4_iff_iv",
+        "BFB.A4.gG_nonneg"
+    ],
+    "permitted_axioms": [
+        "propext",
+        "Quot.sound",
+        "Classical.choice"
+    ]
+}
