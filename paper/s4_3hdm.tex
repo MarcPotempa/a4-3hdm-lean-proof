@@ -22,14 +22,15 @@
 \newcommand{\paperdate}{13 November 2026}
 \newcommand{\searchdate}{13 November 2026}
 
-\title[Boundedness from below of the $S_4$-symmetric 3HDM, machine-checked]{The conjecture of Lavoura and Milagre on the $A_4$-symmetric three-Higgs-doublet model holds for $\Lambda_4=0$: a machine-checked proof}
+\title[Boundedness from below of the $A_4$-symmetric 3HDM, machine-checked]{The conjecture of Lavoura and Milagre on the $A_4$-symmetric three-Higgs-doublet model: machine-checked proofs for $\Lambda_4=0$ and, given the neutral theorem, for $\Lambda_0<0$}
 
 \author{Claude Fable 5}
 \thanks{Claude Fable 5 is an AI model made by Anthropic (model ID \texttt{claude-fable-5-2}).
 The work was commissioned by Dr.\ Marc Potempa; see the statement on authorship and status in
 Section~\ref{sec:status}. Lean sources: \url{https://github.com/MarcPotempa/a4-3hdm-lean-proof}}
-\date{\paperdate}
+\date{\paperdate{} (version 2: Section~\ref{sec:neg} added)}
 
+\emergencystretch=4em
 \begin{document}
 
 \begin{abstract}
@@ -40,8 +41,12 @@ which the symmetry is $S_4$. In this case necessary and sufficient conditions we
 Vaz\~ao (JHEP 11 (2020) 104) by a geometric method; we prove in addition that the two sets of conditions are
 equivalent for all real couplings, which Lavoura and Milagre had checked numerically. All statements are
 formalized in Lean~4 with Mathlib and checked by the Lean kernel. The proof of sufficiency is elementary: it
-rests on one inequality for three doublets, which becomes a sum of squares after a gauge rotation. The
-general case $\Lambda_4\neq0$ remains open.
+rests on one inequality for three doublets, which becomes a sum of squares after a gauge rotation.
+In addition we prove, for arbitrary $\Lambda_4$ and $\Lambda_0<0$, a duality that reduces non-negativity of
+$V_4$ on all field configurations to non-negativity of a second $A_4$ potential on the neutral configurations.
+Together with the theorem of Buskin and Ivanov on neutral configurations (which is used as a hypothesis and is
+not formalized here) this shows that the conditions of Lavoura and Milagre are sufficient whenever
+$\Lambda_0<0$. The case $\Lambda_4\neq0$, $\Lambda_0\ge0$ remains open.
 \end{abstract}
 
 \maketitle
@@ -256,15 +261,126 @@ becomes (51); (45) and (46) both become (52) after division by~3; and (47) becom
 (\lean{BFB.A4.lm\_iff\_lmS4}). With Theorems~\ref{thm:iv} and~\ref{thm:equiv} this proves
 Theorem~\ref{thm:main}.
 
+
+\section{The case $\Lambda_0<0$}\label{sec:neg}
+
+In this section $\La_4$ is arbitrary. Let
+\[
+M=\begin{pmatrix}\La_1&\La_4/2\\ \La_4/2&\La_2\end{pmatrix},\qquad
+m(c)=\La_1(\Re c)^2+\La_2(\Im c)^2+\La_4\,\Re c\,\Im c\quad(c\in\C),
+\]
+so that, with $T=\sum\Re A_{kl}\Im A_{kl}$ over the pairs $12,23,31$,
+\begin{equation}\label{V4m}
+3V_4=\La_0N^2+\La_3Z+3\bigl(m(A_{12})+m(A_{23})+m(A_{31})\bigr)=\La_0N^2+\La_3Z+3\La_1P+3\La_2Q+3\La_4T .
+\end{equation}
+The \emph{dual couplings} are
+\[
+\La_0'=-\frac1{\La_0},\qquad \La_3'=-\frac4{\La_3},\qquad
+\begin{pmatrix}\La_1'&\La_4'/2\\ \La_4'/2&\La_2'\end{pmatrix}=-4M^{-1},
+\]
+that is $\La_1'=-4\La_2/\delta$, $\La_2'=-4\La_1/\delta$, $\La_4'=4\La_4/\delta$ with
+$\delta=\det M=\La_1\La_2-\La_4^2/4$. A configuration is \emph{neutral} if $\chi_k=(v_k,0)$ for $k=1,2,3$.
+
+\begin{theorem}[\lean{BFB.A4.boundedBelow\_of\_dual\_neutral}]\label{thm:dual}
+Let $\La_0<0$, $\La_3>0$ and let $M$ be positive definite. If the potential with the dual couplings is
+non-negative on all neutral configurations, then $V_4\ge0$ on all field configurations.
+\end{theorem}
+
+On neutral configurations the question is settled by the theorem of Buskin and Ivanov \cite[Theorem~1]{BI}. In the
+notation of \cite{LM} it says that $V_4\ge0$ on all neutral configurations if and only if the first four
+inequalities of (43) hold (footnote in Section~4 of \cite{LM}). We use the ``if'' direction, in the original
+formulation of \cite{BI}, as a hypothesis; it is \emph{not} formalized.
+
+\begin{theorem}[\lean{BFB.A4.lm\_sufficient\_of\_L0\_neg}]\label{thm:neg}
+Assume the ``if'' direction of Theorem~1 of \cite{BI}. If $\La_0<0$ and the conditions \textup{(43)--(47)} hold, then
+$V_4\ge0$ on all field configurations.
+\end{theorem}
+
+Since the conditions (43)--(47) are necessary \cite{LM}, Theorem~\ref{thm:neg} says that the conjecture of Lavoura
+and Milagre is true for $\La_0<0$, given the theorem of Buskin and Ivanov. (The necessity of the conditions for
+$\La_4\neq0$ is proved in \cite{LM}; it is formalized here only for $\La_4=0$.)
+
+\subsection{Proof of Theorem~\ref{thm:dual}}
+Three vectors in $\C^2$ are linearly dependent: there is $v\in\C^3$, $v\neq0$, with $v_1\chi_1+v_2\chi_2+v_3\chi_3=0$
+(\lean{exists\_null}). Taking the norm of this vector gives (\lean{normSq\_comb})
+\[
+0=\sum_kp_kA_{kk}+2\,\Re\bigl(w_1A_{12}+w_2A_{23}+w_3A_{31}\bigr),
+\]
+where $p_k=|v_k|^2$ and $(w_1,w_2,w_3)=(\bar v_1v_2,\ \bar v_2v_3,\ \bar v_3v_1)$.
+With $n=p_1+p_2+p_3>0$ the first sum is $\tfrac13nN+\sum_k(p_k-\tfrac n3)(A_{kk}-\tfrac N3)$. The
+Cauchy--Schwarz inequality for the Euclidean form on the diagonal part and for the form $m$ on each off-diagonal
+entry gives
+\[
+\Bigl(\sum_k(p_k-\tfrac n3)(A_{kk}-\tfrac N3)\Bigr)^2\le\frac{4\zeta}{9\La_3}\cdot\La_3Z,\qquad
+\bigl(2\Re(w_kA_{kl})\bigr)^2\le\frac{4\,m^*(w_k)}{3}\cdot3\,m(A_{kl}),
+\]
+where $\zeta=\sum_kp_k^2-\sum_{k<l}p_kp_l$ and $m^*(w)=\bigl(\La_2(\Re w)^2+\La_1(\Im w)^2+\La_4\Re w\Im w\bigr)/\delta$
+is the form of $M^{-1}$ evaluated at $\bar w$ (\lean{cs\_diag}, \lean{cs\_offdiag}). Adding the four inequalities
+(\lean{cs\_add}) yields
+\[
+\Bigl(\frac{nN}{3}\Bigr)^2\le D\cdot\Bigl(\La_3Z+3\sum m(A_{kl})\Bigr),\qquad
+D=\frac{4\zeta}{9\La_3}+\frac43\sum_km^*(w_k).
+\]
+By~\eqref{V4m}, three times the dual potential on the neutral configuration $(\bar v_1,\bar v_2,\bar v_3)$ equals
+$n^2/|\La_0|-9D$ (\lean{V4\_dual\_neutral}); so the hypothesis says $9D\le n^2/|\La_0|$. Hence
+$\La_3Z+3\sum m(A_{kl})\ge|\La_0|N^2$, which is $V_4\ge0$. \qed
+
+\subsection{Proof of Theorem~\ref{thm:neg}}
+We have to show that (43)--(47) and $\La_0<0$ imply $\La_3>0$, that $M$ is positive definite, and that the dual
+couplings satisfy the first four inequalities of (43) (\lean{lm\_dual\_neutralConditions}). Put $\mu=-4\La_0>0$ and,
+for $c=x+iy$,
+\[
+h_0=x,\qquad h_1=-\tfrac x2+\tfrac{\sqrt3}{2}y,\qquad h_2=-\tfrac x2-\tfrac{\sqrt3}{2}y,\qquad h_0+h_1+h_2=0 .
+\]
+The set $\{\max_kh_k\le\frac12\}$ is the triangle with vertices $-1,-\omega,-\omega^2$. The second and third
+inequality of (43) say that $m\ge\mu/4$ at these vertices. On the side $h_0=\frac12$ the form $m$ is a quadratic
+polynomial in $y$; the exclusion of (44) says that its minimum, if it lies inside the side, is at least $\mu/4$.
+The exclusions of (46) and (45) say the same for the sides $h_1=\frac12$ and $h_2=\frac12$. A quadratic polynomial
+on an interval is bounded below by its values at the end points and at an interior minimum
+(\lean{quad\_on\_interval}); therefore $m\ge\mu/4$ on the boundary of the triangle, and by homogeneity
+$m(c)\ge\mu\,\max_kh_k(c)^2$ for all $c$ (\lean{tri\_max}). Since $m(-c)=m(c)$, it follows that
+\[
+m(c)\ \ge\ \mu\,h_k(c)^2\qquad\text{for all }c\in\C\text{ and }k=0,1,2
+\]
+(\lean{tri\_all}). Evaluating this at suitable points gives $\La_1>0$, $\La_2>0$ and
+\[
+\delta\ge4|\La_0|\La_2,\qquad \delta\ge|\La_0|\,\bigl(3\La_1+\La_2\pm\sqrt3\,\La_4\bigr)
+\]
+(\lean{tri\_coeff}). In particular $\delta>0$, so $M$ is positive definite, and the two displayed inequalities are
+the second and the third inequality of (43) for the dual couplings. The first inequality of (43) gives
+$\La_3\ge-\La_0>0$. The first inequality of (43) for the dual couplings is $\La_0+\La_3/4\ge0$, the last
+inequality of (43). Finally, since $\La_0<0<\La_3$, the first inequality in (47) holds, so the exclusion of (47)
+gives $\La_1+\La_2-R\ge-6\La_0\La_3/(\La_0+\La_3)$, which is equivalent to
+$1/|\La_0|\ge1/\La_3+6/(\La_1+\La_2-R)$, the fourth inequality of (43) for the dual couplings
+(\lean{dual\_d}). Now Theorem~\ref{thm:dual} and the theorem of Buskin and Ivanov apply. \qed
+
+\subsection{The theorem of Buskin and Ivanov as a hypothesis}
+In \cite{BI} the potential is written as
+$a\sum_k|z_k|^2+2b\,(|z_1z_2|+|z_2z_3|+|z_3z_1|)+2\Re\bigl(d\,(\bar z_1z_2+\bar z_2z_3+\bar z_3z_1)\bigr)$ for
+$z\in\C^3$ (their Eq.~(1)), and Theorem~1 states that it is non-negative on $\C^3$ if and only if $a\ge0$,
+$a+b-|d|\ge0$ and $a+2b+2|d|\cos(\gamma+2\pi k/3)\ge0$ for $k=1,2,3$, where $d=|d|e^{i\gamma}$ (their Eqs.~(3), (4)).
+The Lean definition \lean{BuskinIvanovTheorem} is the ``if'' direction of this statement, with $\gamma=\arg d$. The
+file \lean{BFB/Neutral.lean} proves that for $z_k=v_k^2$,
+\[
+a=\frac{\La_0+\La_3}{3},\qquad b=\frac{2\La_0-\La_3}{6}+\frac{\La_1+\La_2}{4},\qquad d=\frac{\La_1-\La_2-i\La_4}{4}
+\]
+this potential is $V_4$ on the neutral configuration $\chi_k=(v_k,0)$ (\lean{V4\_neutral\_eq}), and that the
+first four inequalities of (43) imply the conditions of \cite{BI}
+(lemma \lean{biConditions\_of\_neutralConditions}).
+
 \section{What is checked, and how}
 
 The Lean files are in the repository named on the first page. \lean{BFB/Defs.lean} contains the definitions that
 enter the statements: the potential~\eqref{V4} (\lean{BFB.A4.V4}), boundedness from below, and the three sets of
-conditions, transcribed from arXiv:2611.05475v1. The file \lean{Challenge.lean} repeats these definitions and
+conditions, transcribed from arXiv:2611.05475v1, the dual couplings, and the statement of the theorem of
+Buskin and Ivanov, transcribed from arXiv:2104.11428. The file \lean{Challenge.lean} repeats these definitions and
 states the theorems without proof; the program Comparator confirms that the theorems proved in the repository
 are exactly those statements and that they depend on no axioms other than the three standard ones of Lean
 (\lean{propext}, \lean{Quot.sound}, \lean{Classical.choice}). Whoever wants to rely on the result needs to
-read only \lean{Challenge.lean} (about 140 lines) and compare it with the formulas above and in \cite{LM}.
+read only \lean{Challenge.lean} (about 190 lines) and compare it with the formulas above and in \cite{LM}, \cite{BI}.
+Theorem~\ref{thm:neg} is only as good as its hypothesis: should the statement \lean{BuskinIvanovTheorem} deviate
+from what is proved in \cite{BI}, the theorem would rest on an unproved assumption. The transcription was
+compared with the \LaTeX{} source of arXiv:2104.11428, and the statement was tested numerically.
 
 \section{Relation to earlier work}
 
@@ -274,11 +390,13 @@ conjectured in \cite{IV} and proved by Buskin and Ivanov \cite{BI}; Lavoura and 
 charge-breaking directions and stated the conjecture discussed here. A search on \searchdate{} (INSPIRE records
 citing \cite{LM} and \cite{IV}, arXiv, GitHub, general web search) found no proof of the conjecture, no proof of
 Theorem~\ref{thm:equiv} and no formalization of a three-Higgs-doublet potential in a proof assistant; for the
-two-Higgs-doublet model, stability conditions were formalized in Lean by Tooby-Smith \cite{TS}. We may have
+two-Higgs-doublet model, stability conditions were formalized in Lean by Tooby-Smith \cite{TS}. We also did not
+find the duality of Theorem~\ref{thm:dual} in the literature, but the search for it was brief. We may have
 missed something.
 
-For $\La_4\neq0$ the conjecture is not proved. Partial results (pen-and-paper arguments, not formalized and not
-checked by any human) are collected in the file \lean{notes/general\_case.pdf} of the repository.
+For $\La_4\neq0$ and $\La_0\ge0$ the conjecture is not proved. Partial results (pen-and-paper arguments, not
+formalized and not checked by any human) are collected in the file \lean{notes/general\_case.pdf} of the
+repository; Theorem~\ref{thm:dual} is the sufficiency part of ``Theorem~1'' of that note.
 
 \section{Authorship and status}\label{sec:status}
 
