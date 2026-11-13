@@ -1,0 +1,307 @@
+\documentclass[11pt,a4paper]{amsart}
+\usepackage{amssymb,amsthm,mathtools}
+\usepackage[no-math]{fontspec}
+\setmonofont{DejaVuSansMono.ttf}[Scale=0.82]
+\usepackage[margin=27mm]{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,citecolor=blue!50!black]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\La}{\Lambda}
+\newcommand{\lean}[1]{\texttt{#1}}
+\renewcommand{\Re}{\operatorname{Re}}
+\renewcommand{\Im}{\operatorname{Im}}
+\newcommand{\paperdate}{13 November 2026}
+\newcommand{\searchdate}{13 November 2026}
+
+\title[Boundedness from below of the $S_4$-symmetric 3HDM, machine-checked]{The conjecture of Lavoura and Milagre on the $A_4$-symmetric three-Higgs-doublet model holds for $\Lambda_4=0$: a machine-checked proof}
+
+\author{Claude Fable 5}
+\thanks{Claude Fable 5 is an AI model made by Anthropic (model ID \texttt{claude-fable-5-2}).
+The work was commissioned by Dr.\ Marc Potempa; see the statement on authorship and status in
+Section~\ref{sec:status}. Lean sources: \url{https://github.com/MarcPotempa/a4-3hdm-lean-proof}}
+\date{\paperdate}
+
+\begin{document}
+
+\begin{abstract}
+Lavoura and Milagre (arXiv:2611.05475) derive necessary conditions for the quartic part $V_4$ of the
+$A_4$-symmetric potential of three Higgs doublets to be non-negative, and conjecture, on the basis of a
+numerical test, that the conditions are also sufficient. We prove the conjecture in the case $\Lambda_4=0$, in
+which the symmetry is $S_4$. In this case necessary and sufficient conditions were derived by Ivanov and
+Vaz\~ao (JHEP 11 (2020) 104) by a geometric method; we prove in addition that the two sets of conditions are
+equivalent for all real couplings, which Lavoura and Milagre had checked numerically. All statements are
+formalized in Lean~4 with Mathlib and checked by the Lean kernel. The proof of sufficiency is elementary: it
+rests on one inequality for three doublets, which becomes a sum of squares after a gauge rotation. The
+general case $\Lambda_4\neq0$ remains open.
+\end{abstract}
+
+\maketitle
+
+\section{Setting and results}
+
+Let $\chi_1,\chi_2,\chi_3\in\C^2$ be three Higgs doublets and $A_{kl}=\chi_k^\dagger\chi_l$. The quartic part
+of the $A_4$-symmetric potential is \cite[Eq.~(3)]{LM}
+\begin{equation}\label{V4}
+\begin{aligned}
+V_4={}&\frac{\La_0+\La_3}{3}\bigl(A_{11}^2+A_{22}^2+A_{33}^2\bigr)
++\frac{2\La_0-\La_3}{3}\bigl(A_{11}A_{22}+A_{22}A_{33}+A_{33}A_{11}\bigr)\\
+&+\frac{\La_1+\La_2}{2}\bigl(|A_{12}|^2+|A_{23}|^2+|A_{31}|^2\bigr)
++\frac{\La_1-\La_2}{2}\,\Re\bigl(A_{12}^2+A_{23}^2+A_{31}^2\bigr)\\
+&+\frac{\La_4}{2}\,\Im\bigl(A_{12}^2+A_{23}^2+A_{31}^2\bigr),
+\end{aligned}
+\end{equation}
+with real couplings $\La_0,\dots,\La_4$. Following \cite{LM}, the potential is called \emph{bounded from below}
+if $V_4\ge0$ for all $\chi_1,\chi_2,\chi_3$. For $\La_4=0$ the potential is $S_4$-symmetric.
+
+\subsection*{The conditions of Lavoura and Milagre}
+With $R=\sqrt{(\La_1-\La_2)^2+\La_4^2}$, Section~4 of \cite{LM} asks to enforce
+\begin{equation}\label{LMa}\tag{43}
+\begin{gathered}
+\La_0+\La_3\ge0,\qquad \La_0+\La_1\ge0,\qquad \La_0+\frac{\La_1+3\La_2-\sqrt3\,|\La_4|}{4}\ge0,\\
+\La_0+\frac{\La_3}{4}+\frac{3(\La_1+\La_2-R)}{8}\ge0,\qquad \La_0+\frac{\La_3}{4}\ge0,
+\end{gathered}
+\end{equation}
+and to exclude each of the following four situations (two inequalities each):
+\begin{align}
+&|\La_4|-2\sqrt3\,\La_2<0 \ \text{ and }\ \La_0+\frac{4\La_1\La_2-\La_4^2}{16\La_2}<0;\tag{44}\\
+&\bigl|3(\La_2-\La_1)\mp\sqrt3\,\La_4\bigr|-3\bigl(3\La_1+\La_2\mp\sqrt3\,\La_4\bigr)<0 \ \text{ and }\
+\La_0+\frac{4\La_1\La_2-\La_4^2}{4\bigl(3\La_1+\La_2\mp\sqrt3\,\La_4\bigr)}<0;\tag{45, 46}\\
+&\max(0,2\La_0)-\La_3<0 \ \text{ and }\
+\max\Bigl(-\La_1-\La_2-2\La_3,\ \La_1+\La_2+\frac{6\La_0\La_3}{\La_0+\La_3}\Bigr)-R<0.\tag{47}
+\end{align}
+(The upper signs are (45), the lower signs (46); the numbers are those of arXiv:2611.05475v1.)
+The authors prove that these conditions are necessary for boundedness from below and write: ``We therefore
+conjecture that our necessary conditions for BnessFB are, in fact, necessary and sufficient.''
+
+For $\La_4=0$ they specialise the conditions in their Section~5, Eqs.~(50)--(53): enforce
+\begin{equation}\tag{50}
+\begin{gathered}
+\La_0+\La_3\ge0,\qquad \La_0+\La_1\ge0,\qquad \La_0+\frac{\La_1+3\La_2}{4}\ge0,\\
+\La_0+\frac{\La_3}{4}+\frac{3\min(\La_1,\La_2)}{4}\ge0,\qquad \La_0+\frac{\La_3}{4}\ge0,
+\end{gathered}
+\end{equation}
+and exclude
+\begin{align}
+&\La_2>0 \ \text{ and }\ \La_0+\frac{\La_1}{4}<0;\tag{51}\\
+&|\La_2-\La_1|-3\La_1-\La_2<0 \ \text{ and }\ \La_0+\frac{\La_1\La_2}{3\La_1+\La_2}<0;\tag{52}\\
+&\max(0,2\La_0)-\La_3<0 \ \text{ and }\
+\max\Bigl(-\La_1-\La_2-2\La_3,\ \La_1+\La_2+\frac{6\La_0\La_3}{\La_0+\La_3}\Bigr)-|\La_1-\La_2|<0.\tag{53}
+\end{align}
+
+\subsection*{The conditions of Ivanov and Vaz\~ao}
+For the $S_4$-symmetric potential, \cite{IV} gives the following necessary and sufficient conditions (Eqs.~(4.5),
+(4.8), (4.9) there; quoted as Eqs.~(54)--(56) in \cite{LM}): the eight inequalities
+\begin{equation}\tag{54}
+\begin{gathered}
+\La_0+\La_1\ge0,\quad \La_0+\La_3\ge0,\quad \La_0+\frac{\La_1+3\La_2}{4}\ge0,\quad \La_0+\frac{\La_3+3\La_2}{4}\ge0,\\
+\La_0+\frac{\La_1}{4}\ge0,\quad \La_0+\frac{\La_3}{4}\ge0,\quad \La_0+\frac{\La_1+3\La_2}{16}\ge0,\quad
+\La_0+\frac{\La_3+3\La_2}{16}\ge0,
+\end{gathered}
+\end{equation}
+and the exclusion of
+\begin{align}
+&\La_1-|\La_2|>0 \ \text{ and }\ \La_0+\frac{\La_1\La_2}{3\La_1+\La_2}<0,\tag{55}\\
+&\La_3-|\La_2|>0 \ \text{ and }\ \La_0+\frac{\La_2\La_3}{\La_2+3\La_3}<0.\tag{56}
+\end{align}
+About the two sets, \cite{LM} says: ``We have numerically checked that the two methods for guaranteeing BnessFB
+are in practice equivalent.''
+
+\subsection*{Results}
+The following statements are proved in Lean; the names of the Lean theorems are given in brackets.
+
+\begin{theorem}[\lean{BFB.A4.lm\_conjecture\_S4}]\label{thm:main}
+Let $\La_4=0$. Then $V_4\ge0$ for all $\chi_1,\chi_2,\chi_3\in\C^2$ if and only if the conditions
+\textup{(43)--(47)} of Lavoura and Milagre hold. That is, their conjecture is true in the $S_4$ case.
+\end{theorem}
+
+\begin{theorem}[\lean{BFB.A4.boundedBelow\_iff\_iv}]\label{thm:iv}
+Let $\La_4=0$. Then $V_4\ge0$ for all $\chi_1,\chi_2,\chi_3\in\C^2$ if and only if the conditions
+\textup{(54)--(56)} of Ivanov and Vaz\~ao hold.
+\end{theorem}
+
+\begin{theorem}[\lean{BFB.S4.lmS4\_iff\_iv}]\label{thm:equiv}
+For all real $\La_0,\La_1,\La_2,\La_3$, the conditions \textup{(50)--(53)} hold if and only if the conditions
+\textup{(54)--(56)} hold.
+\end{theorem}
+
+\begin{proposition}[\lean{BFB.A4.gG\_nonneg}]\label{prop:key}
+For all $\chi_1,\chi_2,\chi_3\in\C^2$ and every real $\tau\ge\frac34$,
+\begin{equation}\label{key}
+\tau^2N^2-3\tau E-3(4\tau-3)\,Q\ \ge\ 0,
+\end{equation}
+where $N=A_{11}+A_{22}+A_{33}$, $E=\sum_{k<l}\bigl(A_{kk}A_{ll}-|A_{kl}|^2\bigr)$ and
+$Q=(\Im A_{12})^2+(\Im A_{23})^2+(\Im A_{31})^2$.
+\end{proposition}
+
+Theorem~\ref{thm:iv} is the result of Ivanov and Vaz\~ao; what is new here is that it is proved from first
+principles (directly from~\eqref{V4}) in a form that a proof assistant can check, by a route different from
+the geometric argument of \cite{IV}. Theorem~\ref{thm:equiv} replaces the numerical comparison in \cite{LM} by
+a proof. Theorem~\ref{thm:main} follows from Theorems~\ref{thm:iv} and~\ref{thm:equiv} and the fact that
+(43)--(47) reduce to (50)--(53) for $\La_4=0$ (\lean{BFB.A4.lm\_iff\_lmS4}).
+
+\begin{remark}[Division by zero]
+In Lean, $x/0=0$. This convention does not affect any of the statements: in (44), (45), (46), (52), (55) and
+(56) the first inequality of the pair forces the denominator in the second one to be positive; in (47) and (53)
+the first inequality gives $\La_3>0$, so the denominator $\La_0+\La_3$ can vanish only if
+$\La_0+\La_3/4=-3\La_3/4<0$, in which case the conditions fail already by the last inequality of (43) or (50).
+\end{remark}
+
+\section{Proofs}
+
+\subsection{Gram quantities}
+Besides $N$, $E$, $Q$ put
+\[
+Z=\sum_kA_{kk}^2-\sum_{k<l}A_{kk}A_{ll},\qquad P=(\Re A_{12})^2+(\Re A_{23})^2+(\Re A_{31})^2 .
+\]
+Then $Z\ge0$, $P\ge0$, $Q\ge0$, and $E\ge0$ by the Cauchy--Schwarz inequality. Expanding gives
+\begin{equation}\label{rel}
+Z+3E+3P+3Q=N^2,\qquad 3V_4=\La_0N^2+\La_3Z+3\La_1P+3\La_2Q\quad(\La_4=0).
+\end{equation}
+
+\subsection{The key inequality (Proposition~\ref{prop:key})}
+Write $\chi_k=(a_k,b_k)$. The three conditions $\Im(\alpha a_k+\beta b_k)=0$, $k=1,2,3$, are three real linear
+equations for the four real unknowns $\Re\alpha,\Im\alpha,\Re\beta,\Im\beta$, so they have a solution
+$(\alpha,\beta)\neq(0,0)$ (\lean{exists\_gauge}). The matrix
+$\bigl(\begin{smallmatrix}\alpha&\beta\\-\bar\beta&\bar\alpha\end{smallmatrix}\bigr)$ is
+$\sqrt{|\alpha|^2+|\beta|^2}$ times a matrix in $SU(2)$; applying it to all three doublets multiplies every
+$A_{kl}$ by $s=|\alpha|^2+|\beta|^2>0$ and hence the left-hand side of~\eqref{key} by $s^2$. We may therefore
+assume that the upper components are real: $\chi_k=(u_k,d_k)$ with $u_k\in\R$, $d_k\in\C$. With
+$m_1=\sum_ku_k^2$ and $m_2=\sum_k|d_k|^2$ one has the polynomial identity (\lean{key\_poly})
+\[
+2\bigl(\tau^2N^2-3\tau E-3(4\tau-3)Q\bigr)
+=\tfrac12\bigl(2\tau m_1-(3-2\tau)m_2\bigr)^2+6\tau\,\Bigl|\sum_ku_kd_k\Bigr|^2
++\tfrac32(4\tau-3)\,\Bigl|\sum_kd_k^2\Bigr|^2 ,
+\]
+whose right-hand side is non-negative for $\tau\ge\frac34$. \qed
+
+\subsection{Sufficiency in Theorem~\ref{thm:iv}}
+Assume (54)--(56) and $\La_4=0$, and let $m=\min(\La_1,\La_3)$. By~\eqref{rel}, since $Z,P\ge0$,
+\[
+3V_4\ \ge\ \La_0N^2+m\,(Z+3P)+3\La_2Q\ =\ F:=(\La_0+m)N^2-3mE+3(\La_2-m)Q .
+\]
+It remains to show $F\ge0$. For $m=\La_1$ the conditions (54) and (55) give
+\begin{equation}\label{hyp}
+\La_0+m\ge0,\qquad \La_0+\frac m4\ge0,\qquad \La_0+\frac{m+3\La_2}{4}\ge0,\qquad
+|\La_2|<m\ \Rightarrow\ \La_0(3m+\La_2)+m\La_2\ge0,
+\end{equation}
+and for $m=\La_3$ the same follows from (54) and (56). We use~\eqref{key}, writing $g(\tau)$ for its left-hand
+side, and distinguish three cases (\lean{suff\_aux}).
+
+\emph{Case $m\le\La_2$.} Then $F\ge(\La_0+m)N^2-3mE$. If $m<0$ this is $\ge(\La_0+m)N^2\ge0$. If $m\ge0$,
+then $g(\frac34)\ge0$ says $4E\le N^2$, so $F\ge(\La_0+\frac m4)N^2\ge0$.
+
+\emph{Case $m>\La_2$ and $m+\La_2\le0$.} Here $g(\frac32)\ge0$ says $Q\le\frac14N^2-\frac12E$, hence
+$F\ge\bigl(\La_0+\frac{m+3\La_2}{4}\bigr)N^2-\frac32(m+\La_2)E\ge0$.
+
+\emph{Case $m>\La_2$ and $m+\La_2>0$.} Then $|\La_2|<m$, $D:=3m+\La_2>0$ and $\tau:=3m/D\ge\frac34$. One
+checks the identity
+\[
+F=\frac D3\,g(\tau)+(\La_0+m-m\tau)\,N^2,\qquad \La_0+m-m\tau=\frac{\La_0(3m+\La_2)+m\La_2}{D}\ \ge0
+\]
+by the last condition in~\eqref{hyp}. Hence $F\ge0$. \qed
+
+\begin{remark}
+The inequalities~\eqref{key} are sharp. On the family $\chi_1=(\omega s,c)$, $\chi_2=(\bar\omega s,c)$,
+$\chi_3=(s,c)$ used below ($\omega=e^{2\pi i/3}$, $S=s^2$, $C=c^2$) the left-hand side equals
+$\frac94\bigl(2\tau(S+C)-3S\bigr)^2$, and on the family $\chi_1=(0,c)$, $\chi_2=(s,0)$, $\chi_3=(is,0)$ it equals
+$\bigl(\tau(C+2S)-3S\bigr)^2$; each vanishes for a suitable ratio $S:C$ whenever $\frac34\le\tau\le\frac32$.
+In the plane of $(E/N^2,Q/N^2)$ both families trace the same curve
+$\bigl(\sigma(1-\sigma),\sigma^2/4\bigr)$, $0\le\sigma\le1$, and the lines $g(\tau)=0$ are its tangents at
+$\sigma=2\tau/3$. This is where the two ``arc'' conditions (55) and (56) come from.
+\end{remark}
+
+\begin{remark}
+The proof of sufficiency does not use the last two inequalities of (54). Together with the necessity part this
+shows that they follow from the remaining conditions (54)--(56).
+\end{remark}
+
+\subsection{Necessity in Theorem~\ref{thm:iv}}
+Assume $V_4\ge0$ everywhere and $\La_4=0$. Evaluating~\eqref{V4} on two two-parameter families and at two points
+gives (\lean{V4\_tfam}, \lean{V4\_qfam}, \lean{V4\_E}, \lean{V4\_E'}), with $S=s^2\ge0$, $C=c^2\ge0$:
+\begin{align*}
+\chi=\bigl((\omega s,c),(\bar\omega s,c),(s,c)\bigr):&\quad
+\tfrac13V_4=\La_0(S+C)^2+\La_1\bigl(C-\tfrac S2\bigr)^2+\tfrac34\La_2S^2,\\
+\chi=\bigl((0,c),(s,0),(is,0)\bigr):&\quad
+3V_4=\La_0(C+2S)^2+\La_3(C-S)^2+3\La_2S^2,\\
+\chi=\bigl((2,0),(-1,\sqrt3),(-1,-\sqrt3)\bigr):&\quad V_4=48\La_0+12\La_1,\\
+\chi=\bigl((0,1),(1,0),(0,0)\bigr):&\quad 3V_4=4\La_0+\La_3 .
+\end{align*}
+The first family at $(S,C)=(0,1),(1,0),(1,1)$ gives the first, third and seventh inequality of (54); the second
+family at $(S,C)=(0,1),(1,0),(1,2)$ gives the second, fourth and eighth; the two points give the fifth and the
+sixth. If the situation (55) occurred, then $\La_1>|\La_2|$ and the first family at
+$(S,C)=(2\La_1,\La_1+\La_2)$ would give
+$0\le(3\La_1+\La_2)\bigl(\La_0(3\La_1+\La_2)+\La_1\La_2\bigr)$, contradicting the second inequality of (55).
+In the same way the second family at $(S,C)=(\La_3,\La_3+\La_2)$ excludes (56). \qed
+
+\subsection{Equivalence of the two sets of conditions (Theorem~\ref{thm:equiv})}
+This is a statement about real numbers only. Both directions are proved by case distinctions on the signs of
+the quantities involved and on which argument attains the maxima and minima; each case is closed by linear or
+quadratic arithmetic (\lean{lm\_imp\_iv}, \lean{iv\_imp\_lm} in \lean{BFB/S4Equiv.lean}, about 170 lines). For
+example, the fifth inequality of (54), $\La_0+\La_1/4\ge0$, follows from the third inequality of (50) together
+with the exclusion of (51): if it failed, (51) would force $\La_2\le0$, and then
+$\La_0+\La_1/4\ge\La_0+(\La_1+3\La_2)/4\ge0$.
+
+\subsection{From the general conditions to the $S_4$ case}
+For $\La_4=0$ one has $R=|\La_1-\La_2|$ and $\La_1+\La_2-R=2\min(\La_1,\La_2)$, so (43) becomes (50); (44)
+becomes (51); (45) and (46) both become (52) after division by~3; and (47) becomes (53)
+(\lean{BFB.A4.lm\_iff\_lmS4}). With Theorems~\ref{thm:iv} and~\ref{thm:equiv} this proves
+Theorem~\ref{thm:main}.
+
+\section{What is checked, and how}
+
+The Lean files are in the repository named on the first page. \lean{BFB/Defs.lean} contains the definitions that
+enter the statements: the potential~\eqref{V4} (\lean{BFB.A4.V4}), boundedness from below, and the three sets of
+conditions, transcribed from arXiv:2611.05475v1. The file \lean{Challenge.lean} repeats these definitions and
+states the theorems without proof; the program Comparator confirms that the theorems proved in the repository
+are exactly those statements and that they depend on no axioms other than the three standard ones of Lean
+(\lean{propext}, \lean{Quot.sound}, \lean{Classical.choice}). Whoever wants to rely on the result needs to
+read only \lean{Challenge.lean} (about 140 lines) and compare it with the formulas above and in \cite{LM}.
+
+\section{Relation to earlier work}
+
+The conditions for the $S_4$-symmetric model are due to Ivanov and Vaz\~ao \cite{IV}, who obtained them from a
+description of the orbit space. For the $A_4$-symmetric model, conditions for the neutral directions were
+conjectured in \cite{IV} and proved by Buskin and Ivanov \cite{BI}; Lavoura and Milagre \cite{LM} added the
+charge-breaking directions and stated the conjecture discussed here. A search on \searchdate{} (INSPIRE records
+citing \cite{LM} and \cite{IV}, arXiv, GitHub, general web search) found no proof of the conjecture, no proof of
+Theorem~\ref{thm:equiv} and no formalization of a three-Higgs-doublet potential in a proof assistant; for the
+two-Higgs-doublet model, stability conditions were formalized in Lean by Tooby-Smith \cite{TS}. We may have
+missed something.
+
+For $\La_4\neq0$ the conjecture is not proved. Partial results (pen-and-paper arguments, not formalized and not
+checked by any human) are collected in the file \lean{notes/general\_case.pdf} of the repository.
+
+\section{Authorship and status}\label{sec:status}
+
+The proof, its Lean formalization and this description were produced by Claude Fable 5, an AI model made by
+Anthropic (model ID \texttt{claude-fable-5-2}, working in Claude Code), on 11--13 November 2026. The work was
+commissioned by Dr.\ Marc Potempa, who set the task and decided to publish it, but did not contribute to the
+mathematical content. The authors of \cite{LM} were informed before publication.
+
+The Lean proof was checked with the standard Lean kernel (Lean~4.27.0, Mathlib v4.27.0), through
+\lean{lake build} and Comparator. No human has read the proof or this description. Where this description and
+the Lean files differ, the Lean files are authoritative. The transcription of the conditions from \cite{LM} into
+Lean is the part that the kernel cannot check; it was compared with the \LaTeX{} source of arXiv:2611.05475v1 and,
+for \cite{IV}, with the journal version, but not by a second person.
+
+\begin{thebibliography}{9}
+\bibitem{LM} L.~Lavoura, A.~Milagre, \emph{Complete set of bounded-from-below conditions for the
+$A_4$-symmetric three-Higgs-doublet model}, arXiv:2611.05475v1 (3 November 2026).
+\bibitem{IV} I.~P.~Ivanov, F.~Vaz\~ao, \emph{Yet another lesson on the stability conditions in multi-Higgs
+potentials}, JHEP 11 (2020) 104, arXiv:2006.00036.
+\bibitem{BI} N.~Buskin, I.~P.~Ivanov, \emph{Bounded-from-below conditions for $A_4$-symmetric 3HDM},
+J.~Phys.~A 54 (2021) 325401, arXiv:2104.11428.
+\bibitem{TS} J.~Tooby-Smith, \emph{Formalizing the stability of the two Higgs doublet model potential into
+Lean: identifying an error in the literature}, arXiv:2603.08139.
+\end{thebibliography}
+
+\end{document}
