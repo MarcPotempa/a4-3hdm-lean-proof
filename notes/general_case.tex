@@ -1,0 +1,119 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[left=2.2cm,right=2.2cm,top=1.7cm,bottom=1.7cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,urlcolor=blue,linkcolor=black}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.42em}
+\pagestyle{empty}
+\newcommand{\lb}{\overline{\lambda}}
+\newcommand{\F}{\mathcal F}
+\begin{document}
+{\large\bfseries The conjecture of arXiv:2611.05475 ($A_4$-symmetric 3HDM) for $\Lambda_4\neq0$:\\
+two regimes proved on paper, a thin region open}\\[2pt]
+{\small Claude Fable 5 (AI model, Anthropic), commissioned by Dr.~Marc Potempa \quad\textbullet\quad 13 November 2026\\
+\textbf{Status: pen-and-paper arguments, NOT machine-checked, not read by any human, not peer-reviewed.}
+Only Section~6 (the case $\Lambda_4=0$) is verified in Lean. This is the note that was sent to the authors of
+arXiv:2611.05475 on 12 November 2026, with the wording adapted for publication; ``your'' refers to them.}
+
+\medskip
+\textbf{0. Summary.} Your Section~4 conjectures that conditions (43)--(47) are necessary and sufficient for
+$V_4\ge0$. (i)~For $\Lambda_4=0$ this is now a theorem checked in Lean~4. (ii)~For $\Lambda_4\neq0$ sufficiency is
+proved below for $\Lambda_0<0$ (Theorem~1, using the neutral theorem of Buskin and Ivanov) and for a large part of
+$\Lambda_0>0$ (Theorems~2,~3, self-contained). (iii)~What is left is a thin layer next to that part of the boundary
+where a \emph{neutral} condition, (43d) or (43b)/(43c), is the active one. Items (ii) are pen-and-paper arguments,
+cross-checked numerically but not yet formalised.
+
+\textbf{1. Notation.} $G_{kl}=A_{kl}$ is the Gram matrix (Hermitian, positive semidefinite, rank $\le2$), $N=\operatorname{tr}G$.
+Write $R\,e^{i\varphi}=\Lambda_1-\Lambda_2+i\Lambda_4$, $\eta=(\varphi-\pi)/2$, $\sigma_{y}=(\Lambda_1+\Lambda_2-R)/2\le\sigma_{x}=(\Lambda_1+\Lambda_2+R)/2$,
+and $e^{-i\eta}(G_{12},G_{23},G_{31})=\mathbf Y+i\mathbf X$ with $\mathbf X,\mathbf Y\in\mathbb R^3$. For any Hermitian $H$ with trace $t$ and diagonal $d$ let
+\[
+\F(H)=\Lambda_0t^2+\Lambda_3\,\zeta+3\sigma_y|\mathbf Y|^2+3\sigma_x|\mathbf X|^2,\qquad
+\zeta=\textstyle\sum_kd_k^2-\sum_{k<l}d_kd_l ,\qquad\text{so that } 3V_4=\F(G).
+\]
+Rephasing $\chi_k\to\omega^k\chi_k$ and complex conjugation allow $0\le\eta\le30^\circ$. A neutral direction is a
+projector $P_v=vv^\dagger$; put $(Z,Y,X)=(\zeta,3|\mathbf Y|^2,3|\mathbf X|^2)(P_v)$, so $Z+Y+X=1$. The neutral theorem
+[Buskin, Ivanov, arXiv:2104.11428] says that the convex hull of the points $(Z,X)$ is a pentagon with vertices
+$A(1,0)$, $D_Y(\tfrac14,0)$, $D_X(\tfrac14,\tfrac34)$, $B(0,\sin^2\!\eta)$, $C'(0,\sin^2(60^\circ\!+\eta))$; the point
+$C(0,\sin^2(60^\circ\!-\eta))$ lies on the edge $BC'$. The key object is the function
+\[
+L(Z,Y,X)=\frac1{\Lambda_0}+4\Big(\frac Z{\Lambda_3}+\frac Y{\sigma_y}+\frac X{\sigma_x}\Big),
+\]
+which is \emph{linear on the pentagon, in the inverse couplings}.
+
+\textbf{2. Theorem 1 ($\Lambda_0<0$).} \emph{$V_4\ge0$ for all fields if and only if $\Lambda_3,\sigma_y,\sigma_x>0$ and $L\le0$
+at every neutral direction}. Given the positivity, the latter says that the $A_4$ potential with couplings $\Lambda_0'=-1/\Lambda_0$, $\Lambda_3'=-4/\Lambda_3$,
+$\big(\begin{smallmatrix}\Lambda_1'&\Lambda_4'/2\\ \Lambda_4'/2&\Lambda_2'\end{smallmatrix}\big)
+=-4\big(\begin{smallmatrix}\Lambda_1&\Lambda_4/2\\ \Lambda_4/2&\Lambda_2\end{smallmatrix}\big)^{-1}$ (same $\eta$) is bounded from below
+\emph{in the neutral directions}. By the neutral theorem this means $L\le0$ at $A,D_Y,D_X,B,C'$.
+At the three points $(0,\sin^2(\eta+60^\circ k))$ the inequality $L\le0$ is the negation of the second lines of (44)--(46),
+e.g.\ $\Lambda_0+(4\Lambda_1\Lambda_2-\Lambda_4^2)/(16\Lambda_2)\ge0$; and $L(A)\le0$ is $\Lambda_0+\Lambda_3/4\ge0$.
+
+\emph{Proof of sufficiency.} $G$ has a null vector $v$, so with primes denoting traceless parts
+$0=\operatorname{tr}(P_vG)=N/3+\operatorname{tr}(P_v'G')$. The trace pairing splits into the three sectors
+(diagonal, $\mathbf Y$, $\mathbf X$); Cauchy--Schwarz with weights $\Lambda_3,\sigma_y,\sigma_x$ gives
+$N/3\le\sqrt{\tfrac49\big(\tfrac Z{\Lambda_3}+\tfrac Y{\sigma_y}+\tfrac X{\sigma_x}\big)}\,
+\sqrt{\Lambda_3\zeta(G)+3\sigma_y|\mathbf Y|^2+3\sigma_x|\mathbf X|^2}$, and $L(v)\le0$ bounds the first root by
+$1/(3\sqrt{|\Lambda_0|})$. Hence $\Lambda_3\zeta+3\sigma_y|\mathbf Y|^2+3\sigma_x|\mathbf X|^2\ge|\Lambda_0|N^2$. \hfill$\square$\\
+Geometrically: the ellipsoid $\{\F<0\}$ must lie inside the convex body of density matrices, whose faces are labelled
+by the neutral directions. Necessity: a non-positive weight gives a rank-two $G$ with $\F(G)<0$ directly; if $L(v)>0$,
+the ray from the unit matrix along the direction extremal in the Cauchy--Schwarz step leaves the cone of positive
+matrices at a rank-two $G$ with $\F(G)<0$.
+
+\textbf{3. Theorem 2 and the shift.} If $\Lambda_0\ge0$ and $\Lambda_0+\Lambda_3,\ \Lambda_0+\sigma_y,\ \Lambda_0+\sigma_x\ge0$ then
+$\F(G)/N^2=3e\Lambda_0+(\Lambda_0+\Lambda_3)Z+(\Lambda_0+\sigma_y)Y+(\Lambda_0+\sigma_x)X\ge0$ ($e\ge0$ is the product of the two
+eigenvalues of $G/N$; here $Z,Y,X$ are those of $G/N$). Moreover, since $e\ge0$, boundedness for
+$(\Lambda_0-c,\Lambda_3+c,\sigma_y+c,\sigma_x+c)$ with some $c\ge0$ implies boundedness for $(\Lambda_0,\Lambda_3,\sigma_y,\sigma_x)$.
+
+\textbf{4. Theorem 3 ($\Lambda_0>0$, one negative weight).} \emph{Let $\Lambda_0,\Lambda_3,\sigma_x>0>\sigma_y$ and}
+\[
+L(D_Y)=\frac1{\Lambda_0}+\frac1{\Lambda_3}+\frac3{\sigma_y}\le0,\qquad
+L(C)=\frac1{\Lambda_0}+\frac{4\cos^2(60^\circ\!-\eta)}{\sigma_y}+\frac{4\sin^2(60^\circ\!-\eta)}{\sigma_x}\le0 .
+\]
+\emph{Then $V_4\ge0$.} These are the tangency conditions behind (47) and one of (44)--(46), without their case distinctions
+(for $\eta=0$ they force $\Lambda_0+\sigma_y>0$, which is Theorem~2).
+
+\emph{Proof} (for $\eta>0$; the case $\mathbf Y(G)=0$ is trivial). (a) If $\Phi\ge0$ is a Hermitian matrix whose $\mathbf Y$-part is antiparallel to that of $G$ and whose
+dual form $\F^*(\Phi)=\tfrac{t^2}{9\Lambda_0}+\tfrac{4\zeta}{9\Lambda_3}+\tfrac{4|\mathbf Y|^2}{3\sigma_y}+\tfrac{4|\mathbf X|^2}{3\sigma_x}$
+is $\le0$, then $\operatorname{tr}(\Phi G)\ge0$ and Cauchy--Schwarz in the three positive sectors give $\F(G)\ge0$. For
+$\Phi=P_v$ the requirement is $L(v)\le0$ and $\mathbf Y(v)\parallel-\mathbf Y(G)$.
+(b) For a unit vector $\mathbf n$ let $T_{\mathbf n}$ be the Hermitian matrix with zero diagonal and entries
+$n_1e^{i\eta},n_2e^{i\eta},n_3e^{i\eta}$ at positions $(12),(23),(31)$, so that $v^\dagger T_{\mathbf n}v=2\,\mathbf n\!\cdot\!\mathbf Y(v)$.
+Its largest eigenvalue $\lambda$ solves $\lambda^3-\lambda=2n_1n_2n_3\cos3\eta$, and its eigenvector has
+$Z=(1-3e_2)/D^2$, $X=3\sin^2\!3\eta\;e_2/D^2$ with $D=3\lambda^2-1$, $e_2=\sum_{k<l}n_k^2n_l^2$. From this one shows
+$X\le\sin^2(60^\circ\!-\eta)\,(1-4Z)$, i.e.\ the eigenvector lies in the triangle with vertices $D_Y$, $C$ and
+$(Z,Y,X)=(0,1,0)$, on which $L\le0$ (at the third vertex $L=1/\Lambda_0+4/\sigma_y<L(C)$). The proof uses that for fixed
+$n_1n_2n_3$ the smallest $e_2$ occurs at $\mathbf n^2=(1-2t,t,t)$, $t\le\tfrac13$, and a monotonicity argument in one
+variable; equality holds for $\mathbf n$ along an axis and along $-(1,1,1)$.
+(c) The map $\mathbf n\mapsto\mathbf Y(v_{\mathbf n})/|\mathbf Y(v_{\mathbf n})|$ is continuous on the sphere and satisfies
+$\mathbf n\!\cdot\!\mathbf Y>0$, hence is onto: every direction is the $\mathbf Y$-direction of a neutral $v$ with
+$L(v)\le0$. Apply (a). \hfill$\square$
+
+\textbf{5. What is covered, and what is not.} Among 20\,000 random coupling sets (uniform in $[-1,1]^5$) satisfying
+your conditions, Theorems~1--3 with the shift cover all but~3; no set violating your conditions is ever covered.
+On the boundary of your conditions the uncovered points are within $0.013$ (in $\Lambda_0$, couplings of order one)
+of the proved region. Uncovered are cases with $\Lambda_0>0>\sigma_y$ in which the negative region of $\F$ first
+touches the orbit space at a neutral vertex ($D_Y$ or $B$) instead of along a $q$- or $t$-path, typically with
+$\Lambda_3<0$. There the boundary of your conditions is one of the neutral inequalities (43b)--(43d), and what is
+missing is a proof that the charge-breaking directions do no harm; the method of Theorem~3 would need mixed
+(rank-two) matrices $\Phi$ there, and we did not find them in closed form.
+
+\textbf{6. The $S_4$ case in Lean.} Proved in Lean~4 with Mathlib, no additional axioms: for $\Lambda_4=0$, $V_4\ge0$
+for all fields iff your conditions hold (\texttt{BFB.A4.lm\_conjecture\_S4}), and your Section~5 conditions are equivalent
+to those of Ivanov and Vaz\~ao, JHEP 11 (2020) 104 (\texttt{BFB.S4.lmS4\_iff\_iv}). The proof does not use the geometric argument of
+arXiv:2006.00036 but the inequality $\tau^2N^2-3\tau E-3(4\tau-3)\sum_{k<l}(\operatorname{Im}A_{kl})^2\ge0$ for $\tau\ge\tfrac34$,
+$E=\sum_{k<l}(A_{kk}A_{ll}-|A_{kl}|^2)$. The Lean files and a description of this proof (\texttt{paper/s4\_3hdm.pdf}) are in the repository
+\url{https://github.com/MarcPotempa/a4-3hdm-lean-proof}, of which this note is a part.
+
+\textbf{7. Checks and disclosure.} Theorem~1 was compared with your conditions on $4\times10^5$ coupling sets with
+$\Lambda_0<0$ (no disagreement), Theorem~3 on $4\times10^5$ sets (hypotheses satisfied $\Rightarrow$ your conditions
+satisfied, $88\,222$ cases); at boundary points of both theorems a direct minimisation of $V_4$ gives $0$ to $10^{-15}$.
+A second, independent AI run re-derived the proofs of Theorems~1--3 and attacked them numerically (about $15\,000$
+coupling sets in extreme corners) without finding an error; no human has checked them.
+The work was produced by the AI model Claude Fable 5 (Anthropic, model ID \texttt{claude-fable-5-2}); it was
+commissioned by Dr.~Marc Potempa, who is not a particle physicist and did not contribute to the mathematical content.
+We searched for earlier proofs and found none, but may have missed something. The programs behind the numerical
+statements are not part of the repository.
+\end{document}
