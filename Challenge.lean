@@ -1,15 +1,18 @@
 import Mathlib
 
 /-!
-# Boundedness from below of the `A₄`-symmetric three-Higgs-doublet potential for `Λ₄ = 0`
+# Boundedness from below of the `A₄`-symmetric three-Higgs-doublet potential
 
 Definitions and statements only (the proofs are replaced by `sorry`); this file is the input
 for Comparator.  The definitions are a verbatim copy of `BFB/Defs.lean`; the proofs are in
-`BFB/S4Equiv.lean` and `BFB/S4ThreeHDM.lean`.
+`BFB/`.
 
-Source of the potential and of the conditions:
-L. Lavoura, A. Milagre, "Complete set of bounded-from-below conditions for the `A₄`-symmetric
-three-Higgs-doublet model", arXiv:2611.05475v1 (3 Nov 2026).
+Sources of the potential and of the conditions:
+* L. Lavoura, A. Milagre, "Complete set of bounded-from-below conditions for the `A₄`-symmetric
+  three-Higgs-doublet model", arXiv:2611.05475v1 (3 Nov 2026);
+* N. Buskin, I. P. Ivanov, "Bounded-from-below conditions for `A₄`-symmetric 3HDM",
+  J. Phys. A 54 (2021) 325401, arXiv:2104.11428 (for `BuskinIvanovTheorem`, which is a
+  hypothesis of `lm_sufficient_of_L0_neg` and is not proved here).
 -/
 
 namespace BFB
@@ -96,6 +99,39 @@ def LMConditions (p : Params) : Prop :=
       max (-p.L1 - p.L2 - 2 * p.L3) (p.L1 + p.L2 + 6 * p.L0 * p.L3 / (p.L0 + p.L3))
         - √((p.L1 - p.L2) ^ 2 + p.L4 ^ 2) < 0)
 
+/-! ### The case `Λ₀ < 0`: dual couplings, neutral configurations, the theorem of Buskin–Ivanov -/
+
+/-- The dual couplings. -/
+noncomputable def dual (p : Params) : Params where
+  L0 := -1 / p.L0
+  L1 := -4 * p.L2 / (p.L1 * p.L2 - p.L4 ^ 2 / 4)
+  L2 := -4 * p.L1 / (p.L1 * p.L2 - p.L4 ^ 2 / 4)
+  L3 := -4 / p.L3
+  L4 := 4 * p.L4 / (p.L1 * p.L2 - p.L4 ^ 2 / 4)
+
+/-- Boundedness from below on the neutral configurations `χ_k = (v_k, 0)`. -/
+def NeutralBoundedBelow (p : Params) : Prop :=
+  ∀ v₁ v₂ v₃ : ℂ, 0 ≤ V4 p ![v₁, 0] ![v₂, 0] ![v₃, 0]
+
+/-- The potential of Buskin–Ivanov, Eq. (1). -/
+noncomputable def BIPotential (a b : ℝ) (d : ℂ) (z₁ z₂ z₃ : ℂ) : ℝ :=
+  a * (Complex.normSq z₁ + Complex.normSq z₂ + Complex.normSq z₃)
+    + 2 * b * (‖z₁ * z₂‖ + ‖z₂ * z₃‖ + ‖z₃ * z₁‖)
+    + (d * ((starRingEnd ℂ) z₁ * z₂ + (starRingEnd ℂ) z₂ * z₃ + (starRingEnd ℂ) z₃ * z₁)
+        + (starRingEnd ℂ) d
+          * ((starRingEnd ℂ) z₂ * z₁ + (starRingEnd ℂ) z₃ * z₂ + (starRingEnd ℂ) z₁ * z₃)).re
+
+/-- The conditions of Buskin–Ivanov, Eqs. (3) and (4), with `γ = arg d`. -/
+def BIConditions (a b : ℝ) (d : ℂ) : Prop :=
+  0 ≤ a ∧ 0 ≤ a + b - ‖d‖ ∧
+    ∀ k : ℕ, k ∈ ({1, 2, 3} : Finset ℕ) →
+      0 ≤ a + 2 * b + 2 * ‖d‖ * Real.cos (Complex.arg d + 2 * Real.pi * k / 3)
+
+/-- The "if" direction of Theorem 1 of Buskin–Ivanov: their conditions imply that their
+potential is non-negative on `ℂ³`.  Used as a hypothesis; not proved in this repository. -/
+def BuskinIvanovTheorem : Prop :=
+  ∀ (a b : ℝ) (d : ℂ), BIConditions a b d → ∀ z₁ z₂ z₃ : ℂ, 0 ≤ BIPotential a b d z₁ z₂ z₃
+
 end A4
 
 end BFB
@@ -129,6 +165,22 @@ theorem boundedBelow_iff_iv (p : Params) (h4 : p.L4 = 0) :
 conditions of arXiv:2611.05475, Section 4, are necessary and sufficient for the quartic part of
 the potential to be non-negative on all field configurations. -/
 theorem lm_conjecture_S4 (p : Params) (h4 : p.L4 = 0) : BoundedBelow p ↔ LMConditions p := by
+  sorry
+
+/-- **Duality.**  Let `Λ₀ < 0`, `Λ₃ > 0` and let `[[Λ₁, Λ₄/2], [Λ₄/2, Λ₂]]` be positive definite.
+If the potential with the dual couplings is non-negative on all neutral configurations, then
+`V₄ ≥ 0` on all field configurations. -/
+theorem boundedBelow_of_dual_neutral (p : Params) (h0 : p.L0 < 0) (h3 : 0 < p.L3)
+    (h1 : 0 < p.L1) (hδ : 0 < p.L1 * p.L2 - p.L4 ^ 2 / 4) (hd : NeutralBoundedBelow (dual p)) :
+    BoundedBelow p := by
+  sorry
+
+/-- **The conjecture of Lavoura and Milagre for `Λ₀ < 0`, sufficiency, conditional on the
+neutral theorem of Buskin–Ivanov.**  If `Λ₀ < 0` and the conditions of arXiv:2611.05475,
+Section 4, hold, then the quartic part of the potential is non-negative on all field
+configurations.  (That the conditions are necessary is shown in arXiv:2611.05475.) -/
+theorem lm_sufficient_of_L0_neg (hBI : BuskinIvanovTheorem) (p : Params) (h0 : p.L0 < 0)
+    (h : LMConditions p) : BoundedBelow p := by
   sorry
 
 end A4

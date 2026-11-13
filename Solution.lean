@@ -1,3 +1,3 @@
-import BFB.S4ThreeHDM
+import BFB.Neutral
 
-/-! The proofs are in `BFB/S4Equiv.lean` and `BFB/S4ThreeHDM.lean`. -/
+/-! The proofs are in the directory `BFB/`. -/

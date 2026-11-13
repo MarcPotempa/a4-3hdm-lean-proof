@@ -5,7 +5,9 @@
         "BFB.A4.lm_conjecture_S4",
         "BFB.A4.boundedBelow_iff_iv",
         "BFB.S4.lmS4_iff_iv",
-        "BFB.A4.gG_nonneg"
+        "BFB.A4.gG_nonneg",
+        "BFB.A4.boundedBelow_of_dual_neutral",
+        "BFB.A4.lm_sufficient_of_L0_neg"
     ],
     "permitted_axioms": [
         "propext",
